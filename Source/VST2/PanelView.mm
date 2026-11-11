@@ -40,28 +40,28 @@ struct Ctl
 
 // Portrait, in the pedal's proportions: top rail, knob section, the treadle
 // with the stomp switch, the name plate, then the plugin strip.
-const CGFloat kStripTop = 560.0;
-const CGFloat kRail = 64.0;                 // bottom of the top rail
-const CGFloat kLedge = 262.0;               // knob section / treadle
-const CGFloat kTitleY = 104.0;
-const NSRect kTreadle = { { 24.0, 274.0 }, { 432.0, 172.0 } };
-const NSRect kPlate = { { 40.0, 464.0 }, { 400.0, 80.0 } };
+const CGFloat kStripTop = 528.0;
+const CGFloat kRail = 32.0;                 // bottom of the top rail
+const CGFloat kLedge = 230.0;               // knob section / treadle
+const CGFloat kTitleY = 72.0;
+const NSRect kTreadle = { { 24.0, 242.0 }, { 432.0, 172.0 } };
+const NSRect kPlate = { { 40.0, 432.0 }, { 400.0, 80.0 } };
 
 // Main panel, then the plugin strip.
 const Ctl kCtls[] = {
-    { kGain,      kCtlKnob,      144, 178, 30, "GAIN",       0, 0 },
-    { kSustain,   kCtlKnob,      336, 178, 30, "SUSTAIN",    0, 0 },
-    { kEffect,    kCtlFootswitch,240, 386, 24, "EFFECT",     0, 0 },
+    { kGain,      kCtlKnob,      144, 146, 30, "GAIN",       0, 0 },
+    { kSustain,   kCtlKnob,      336, 146, 30, "SUSTAIN",    0, 0 },
+    { kEffect,    kCtlFootswitch,240, 354, 24, "EFFECT",     0, 0 },
     // Plugin strip
-    { kInput,     kCtlSmallKnob, 262, 612, 21, "INPUT",      "-12", "+12" },
-    { kOutput,    kCtlSmallKnob, 392, 612, 21, "OUTPUT",     "-24", "+24" },
+    { kInput,     kCtlSmallKnob, 262, 580, 21, "INPUT",      "-12", "+12" },
+    { kOutput,    kCtlSmallKnob, 392, 580, 21, "OUTPUT",     "-24", "+24" },
 };
 
 // Preset section in the strip: a SAVE button and slots 1..8, then the readout
-const NSRect kSaveRect = { { 40.0, 664.0 }, { 54.0, 26.0 } };
-const CGFloat kSlotX0 = 104.0, kSlotPitch = 42.0, kSlotW = 36.0, kSlotY = 664.0, kSlotH = 26.0;
-const CGFloat kPresetLabelY = 650.0;
-const NSRect kReadoutRect = { { 20.0, 706.0 }, { 440.0, 56.0 } };
+const NSRect kSaveRect = { { 40.0, 632.0 }, { 54.0, 26.0 } };
+const CGFloat kSlotX0 = 104.0, kSlotPitch = 42.0, kSlotW = 36.0, kSlotY = 632.0, kSlotH = 26.0;
+const CGFloat kPresetLabelY = 618.0;
+const NSRect kReadoutRect = { { 20.0, 674.0 }, { 440.0, 56.0 } };
 
 inline NSRect slotRect (int k) { return NSMakeRect (kSlotX0 + k * kSlotPitch, kSlotY, kSlotW, kSlotH); }
 const int kNumCtls = (int) (sizeof (kCtls) / sizeof (kCtls[0]));
@@ -320,7 +320,7 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
     drawShatteredText ("SUZZ", 74.0, NSMidX (kPlate), NSMidY (kPlate) + 1.0);
 
     // The TB electronic logo in the strip's corner, straight on the silver
-    tblogo::drawTBLogo (NSMakeRect (16.0, 570.0, 130.0, 72.0));
+    tblogo::drawTBLogo (NSMakeRect (16.0, 538.0, 130.0, 72.0));
 }
 
 - (void) drawScaleForCtl: (const Ctl&) c

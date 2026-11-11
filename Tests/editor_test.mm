@@ -122,24 +122,24 @@ int main (int argc, char** argv)
     e->setParameter (e, kSustain, 0.5f);
     const float g0 = e->getParameter (e, kSustain);
     automateCalls = beginCalls = endCalls = 0;
-    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (336, 178));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (336, 153));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (336, 128));
-    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (336, 128));
+    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (336, 146));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (336, 121));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (336, 96));
+    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (336, 96));
     const float g1 = e->getParameter (e, kSustain);
     std::printf ("  Sustain %.2f -> %.2f\n", g0, g1);
     check (std::fabs (g1 - std::min (1.0f, g0 + 0.25f)) < 0.02f, "dragging a knob up turns it up");
     check (automateCalls > 0 && beginCalls == 1 && endCalls == 1, "host gets begin / automate / end");
 
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (336, 178), 2);
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (336, 178), 2);
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (336, 146), 2);
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (336, 146), 2);
     check (std::fabs (e->getParameter (e, kSustain) - kDefaults[kSustain]) < 1e-6f, "double-click resets a knob");
 
     // Each knob answers where it is drawn
     {
         const int knobs[4] = { kGain, kSustain, kInput, kOutput };
         const CGFloat kx[4] = { 144, 336, 262, 392 };
-        const CGFloat ky[4] = { 178, 178, 612, 612 };
+        const CGFloat ky[4] = { 146, 146, 580, 580 };
         bool all = true;
         for (int k = 0; k < 4; ++k)
         {
@@ -154,31 +154,31 @@ int main (int argc, char** argv)
     }
 
     // Stomp switch: each press toggles
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (240, 386));
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (240, 386));
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (240, 354));
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (240, 354));
     check (e->getParameter (e, kEffect) < 0.5f, "footswitch switches the effect out");
     pump (0.1);
     renderPNG (panel, dir + "/panel_bypassed.png");
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (240, 386));
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (240, 386));
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (240, 354));
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (240, 354));
     check (e->getParameter (e, kEffect) >= 0.5f, "and back in");
 
     // Strip knob turned up shows in the readout
     const float a0 = e->getParameter (e, kOutput);
-    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (392, 612));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (392, 592));
-    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (392, 592));
+    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (392, 580));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (392, 560));
+    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (392, 560));
     check (e->getParameter (e, kOutput) > a0 + 0.05f, "strip knobs turn");
     renderPNG (panel, dir + "/panel_readout.png");
     e->setParameter (e, kOutput, 0.5f);
 
     std::printf ("\nPresets\n");
-    #define SLOT(k) NSMakePoint (104.0 + (k) * 42.0 + 18.0, 677.0)
+    #define SLOT(k) NSMakePoint (104.0 + (k) * 42.0 + 18.0, 645.0)
     e->setParameter (e, kSustain, 0.3f);
     e->setParameter (e, kEffect, 0.0f);
     pump (0.1);
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (67, 677));    // SAVE
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (67, 677));
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (67, 645));    // SAVE
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (67, 645));
     mouse (win, panel, NSLeftMouseDown, SLOT (2));                   // slot 3
     mouse (win, panel, NSLeftMouseUp,   SLOT (2));
     FILE* pf = std::fopen (presetFile.c_str(), "r");
