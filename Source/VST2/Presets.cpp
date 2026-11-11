@@ -13,7 +13,7 @@ namespace tbsz
 
 namespace
 {
-    const char* const kHeader = "TBCC-PRESETS 1";
+    const char* const kHeader = "TBSZ-PRESETS 1";
 
     // mkdir -p for the folder containing 'file'
     void makeParentDirs (const std::string& file)
