@@ -133,7 +133,7 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
 
     // Glyphs come y-up: flip into the panel's coordinates, slant, centre
     NSAffineTransform* t = [NSAffineTransform transform];
-    NSAffineTransformStruct m = { 1.0, 0.0, 0.22, -1.0, 0.0, 0.0 };    // x' = x + 0.22 y: tops lean forward
+    NSAffineTransformStruct m = { 1.12, 0.0, 0.22, -1.0, 0.0, 0.0 };   // a touch wider; x' + 0.22 y: tops lean forward
     [t setTransformStruct: m];
     [glyphs transformUsingAffineTransform: t];
     const NSRect b = [glyphs bounds];
@@ -146,9 +146,9 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
     // how far each strip between them is knocked sideways
     const int kStrips = 5;
     const CGFloat cutAt[kStrips + 1]  = { -0.2, 0.21, 0.40, 0.61, 0.79, 1.2 };
-    const CGFloat cutTilt[kStrips + 1] = { 0.0, 0.05, -0.04, 0.06, -0.05, 0.0 };
-    const CGFloat shift[kStrips] = { -4.0, 3.0, -2.5, 4.5, -3.0 };
-    const CGFloat gap = 1.2;
+    const CGFloat cutTilt[kStrips + 1] = { 0.0, 0.02, -0.015, 0.025, -0.02, 0.0 };
+    const CGFloat shift[kStrips] = { -5.0, 4.0, -3.0, 5.5, -4.0 };
+    const CGFloat gap = 1.5;
     const CGFloat x0 = NSMinX (r) - 30.0, x1 = NSMaxX (r) + 30.0, mid = NSMidX (r);
 
     [[NSColor blackColor] set];
@@ -324,7 +324,7 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
     [rgb (80, 82, 85) set];
     [plate setLineWidth: 1.0];
     [plate stroke];
-    drawShatteredText ("SUZZ", 56.0, NSMidX (kPlate), NSMidY (kPlate) + 1.0);
+    drawShatteredText ("SUZZ", 74.0, NSMidX (kPlate), NSMidY (kPlate) + 1.0);
 
     // The TB electronic logo in the strip's corner, straight on the silver
     tblogo::drawTBLogo (NSMakeRect (16.0, 670.0, 130.0, 72.0));
