@@ -115,7 +115,7 @@ void drawTextLeft (const char* s, NSFont* font, NSColor* color, CGFloat x, CGFlo
 }
 
 // Lettering in the spirit of the Shatter display face: heavy slanted capitals
-// sliced by slightly tilted fractures into strips, each strip knocked sideways.
+// sliced by two horizontal cuts into three strips, each knocked sideways.
 // Built from Helvetica Bold glyph outlines, so no font file is needed.
 void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
 {
@@ -144,11 +144,11 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
 
     // Fracture lines (fraction of the height at the centre, and their tilt), and
     // how far each strip between them is knocked sideways
-    const int kStrips = 5;
-    const CGFloat cutAt[kStrips + 1]  = { -0.2, 0.21, 0.40, 0.61, 0.79, 1.2 };
-    const CGFloat cutTilt[kStrips + 1] = { 0.0, 0.02, -0.015, 0.025, -0.02, 0.0 };
-    const CGFloat shift[kStrips] = { -5.0, 4.0, -3.0, 5.5, -4.0 };
-    const CGFloat gap = 1.5;
+    const int kStrips = 3;
+    const CGFloat cutAt[kStrips + 1]  = { -0.2, 0.36, 0.64, 1.2 };
+    const CGFloat cutTilt[kStrips + 1] = { 0.0, 0.0, 0.0, 0.0 };
+    const CGFloat shift[kStrips] = { -3.0, 2.5, -2.0 };
+    const CGFloat gap = 1.8;
     const CGFloat x0 = NSMinX (r) - 30.0, x1 = NSMaxX (r) + 30.0, mid = NSMidX (r);
 
     [[NSColor blackColor] set];
