@@ -3,7 +3,7 @@
 // Carlsbro Suzz pedal, in its proportions. Opaque silver, black lettering,
 // grey knurled knobs with a red position line for GAIN and SUSTAIN (scales
 // marked min and max as on the pedal), the treadle with the stomp switch
-// (glows red when the effect is in), the bar and the name plate. A strip of
+// (glows red when the effect is in) and the name plate. A strip of
 // plugin controls runs along the bottom (TB electronic logo, Input, Output,
 // presets and the readout).
 //
@@ -39,14 +39,13 @@ struct Ctl
 };
 
 // Portrait, in the pedal's proportions: top rail, knob section, the treadle
-// with the stomp switch, the bar, the name plate, then the plugin strip.
-const CGFloat kStripTop = 660.0;
+// with the stomp switch, the name plate, then the plugin strip.
+const CGFloat kStripTop = 560.0;
 const CGFloat kRail = 64.0;                 // bottom of the top rail
 const CGFloat kLedge = 262.0;               // knob section / treadle
 const CGFloat kTitleY = 104.0;
 const NSRect kTreadle = { { 24.0, 274.0 }, { 432.0, 172.0 } };
-const NSRect kBar = { { 14.0, 462.0 }, { 452.0, 86.0 } };
-const NSRect kPlate = { { 40.0, 564.0 }, { 400.0, 80.0 } };
+const NSRect kPlate = { { 40.0, 464.0 }, { 400.0, 80.0 } };
 
 // Main panel, then the plugin strip.
 const Ctl kCtls[] = {
@@ -54,15 +53,15 @@ const Ctl kCtls[] = {
     { kSustain,   kCtlKnob,      336, 178, 30, "SUSTAIN",    0, 0 },
     { kEffect,    kCtlFootswitch,240, 386, 24, "EFFECT",     0, 0 },
     // Plugin strip
-    { kInput,     kCtlSmallKnob, 262, 712, 21, "INPUT",      "-12", "+12" },
-    { kOutput,    kCtlSmallKnob, 392, 712, 21, "OUTPUT",     "-24", "+24" },
+    { kInput,     kCtlSmallKnob, 262, 612, 21, "INPUT",      "-12", "+12" },
+    { kOutput,    kCtlSmallKnob, 392, 612, 21, "OUTPUT",     "-24", "+24" },
 };
 
 // Preset section in the strip: a SAVE button and slots 1..8, then the readout
-const NSRect kSaveRect = { { 40.0, 764.0 }, { 54.0, 26.0 } };
-const CGFloat kSlotX0 = 104.0, kSlotPitch = 42.0, kSlotW = 36.0, kSlotY = 764.0, kSlotH = 26.0;
-const CGFloat kPresetLabelY = 750.0;
-const NSRect kReadoutRect = { { 20.0, 806.0 }, { 440.0, 56.0 } };
+const NSRect kSaveRect = { { 40.0, 664.0 }, { 54.0, 26.0 } };
+const CGFloat kSlotX0 = 104.0, kSlotPitch = 42.0, kSlotW = 36.0, kSlotY = 664.0, kSlotH = 26.0;
+const CGFloat kPresetLabelY = 650.0;
+const NSRect kReadoutRect = { { 20.0, 706.0 }, { 440.0, 56.0 } };
 
 inline NSRect slotRect (int k) { return NSMakeRect (kSlotX0 + k * kSlotPitch, kSlotY, kSlotW, kSlotH); }
 const int kNumCtls = (int) (sizeof (kCtls) / sizeof (kCtls[0]));
@@ -312,25 +311,6 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
         drawText (title, tf, ink, cx, kTitleY);
     }
 
-    // The bar across the pedal below the treadle: brushed, with rolled edges
-    NSGradient* bar = [[[NSGradient alloc] initWithStartingColor: rgb (236, 237, 239)
-                                                     endingColor: rgb (196, 199, 203)] autorelease];
-    [bar drawInRect: kBar angle: 90.0];
-    for (CGFloat y = NSMinY (kBar) + 10.0; y < NSMaxY (kBar) - 10.0; y += 3.0)
-    {
-        [[NSColor colorWithCalibratedWhite: 1.0 alpha: 0.18] set];
-        NSRectFill (NSMakeRect (NSMinX (kBar) + 2.0, y, kBar.size.width - 4.0, 1.0));
-    }
-    const CGFloat edges[2] = { NSMinY (kBar), NSMaxY (kBar) - 8.0 };
-    for (int k = 0; k < 2; ++k)
-    {
-        NSGradient* lip = [[[NSGradient alloc] initWithStartingColor: rgb (246, 247, 248)
-                                                         endingColor: rgb (150, 153, 157)] autorelease];
-        [lip drawInRect: NSMakeRect (NSMinX (kBar), edges[k], kBar.size.width, 8.0) angle: 90.0];
-    }
-    [rgb (80, 82, 85) set];
-    NSFrameRectWithWidth (kBar, 1.0);
-
     // Name plate (plain lettering, no maker's artwork)
     NSBezierPath* plate = [NSBezierPath bezierPathWithRect: kPlate];
     [bronzeGradient() drawInBezierPath: plate angle: 90.0];
@@ -340,7 +320,7 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
     drawShatteredText ("SUZZ", 74.0, NSMidX (kPlate), NSMidY (kPlate) + 1.0);
 
     // The TB electronic logo in the strip's corner, straight on the silver
-    tblogo::drawTBLogo (NSMakeRect (16.0, 670.0, 130.0, 72.0));
+    tblogo::drawTBLogo (NSMakeRect (16.0, 570.0, 130.0, 72.0));
 }
 
 - (void) drawScaleForCtl: (const Ctl&) c

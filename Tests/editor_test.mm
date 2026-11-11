@@ -139,7 +139,7 @@ int main (int argc, char** argv)
     {
         const int knobs[4] = { kGain, kSustain, kInput, kOutput };
         const CGFloat kx[4] = { 144, 336, 262, 392 };
-        const CGFloat ky[4] = { 178, 178, 712, 712 };
+        const CGFloat ky[4] = { 178, 178, 612, 612 };
         bool all = true;
         for (int k = 0; k < 4; ++k)
         {
@@ -165,20 +165,20 @@ int main (int argc, char** argv)
 
     // Strip knob turned up shows in the readout
     const float a0 = e->getParameter (e, kOutput);
-    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (392, 712));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (392, 692));
-    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (392, 692));
+    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (392, 612));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (392, 592));
+    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (392, 592));
     check (e->getParameter (e, kOutput) > a0 + 0.05f, "strip knobs turn");
     renderPNG (panel, dir + "/panel_readout.png");
     e->setParameter (e, kOutput, 0.5f);
 
     std::printf ("\nPresets\n");
-    #define SLOT(k) NSMakePoint (104.0 + (k) * 42.0 + 18.0, 777.0)
+    #define SLOT(k) NSMakePoint (104.0 + (k) * 42.0 + 18.0, 677.0)
     e->setParameter (e, kSustain, 0.3f);
     e->setParameter (e, kEffect, 0.0f);
     pump (0.1);
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (67, 777));    // SAVE
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (67, 777));
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (67, 677));    // SAVE
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (67, 677));
     mouse (win, panel, NSLeftMouseDown, SLOT (2));                   // slot 3
     mouse (win, panel, NSLeftMouseUp,   SLOT (2));
     FILE* pf = std::fopen (presetFile.c_str(), "r");

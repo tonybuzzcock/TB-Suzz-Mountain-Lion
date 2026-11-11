@@ -9,7 +9,7 @@
 namespace tbsz
 {
 
-enum { kEditorWidth = 480, kEditorHeight = 880 };   // the pedal's proportions
+enum { kEditorWidth = 480, kEditorHeight = 780 };
 
 // What the editor needs from the plugin.
 class EditorHost
