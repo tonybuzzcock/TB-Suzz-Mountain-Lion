@@ -114,6 +114,15 @@ void drawTextLeft (const char* s, NSFont* font, NSColor* color, CGFloat x, CGFlo
     [str drawAtPoint: NSMakePoint (x, cy - sz.height * 0.5) withAttributes: attrs];
 }
 
+// Bronze: warm metallic, lighter at the top
+NSGradient* bronzeGradient()
+{
+    return [[[NSGradient alloc] initWithColorsAndLocations:
+               rgb (222, 168, 112), 0.0,
+               rgb (196, 136, 82), 0.55,
+               rgb (168, 110, 62), 1.0, nil] autorelease];
+}
+
 // Lettering in the spirit of the Shatter display face: heavy slanted capitals
 // sliced by two horizontal cuts into three strips, each knocked sideways.
 // Built from Helvetica Bold glyph outlines, so no font file is needed.
@@ -258,6 +267,9 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
                                                       endingColor: rgb (184, 188, 192)] autorelease];
     [face drawInRect: NSMakeRect (0, 0, b.size.width, kStripTop) angle: 90.0];
 
+    // Bronze behind the knob section, as on the pedal
+    [bronzeGradient() drawInRect: NSMakeRect (7.0, kRail, b.size.width - 14.0, kLedge - kRail) angle: 90.0];
+
     // Plugin strip, a slightly darker silver
     NSGradient* strip = [[[NSGradient alloc] initWithStartingColor: rgb (196, 199, 203)
                                                        endingColor: rgb (166, 170, 175)] autorelease];
@@ -321,6 +333,7 @@ void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
 
     // Name plate (plain lettering, no maker's artwork)
     NSBezierPath* plate = [NSBezierPath bezierPathWithRect: kPlate];
+    [bronzeGradient() drawInBezierPath: plate angle: 90.0];
     [rgb (80, 82, 85) set];
     [plate setLineWidth: 1.0];
     [plate stroke];
