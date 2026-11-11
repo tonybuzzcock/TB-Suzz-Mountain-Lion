@@ -15,7 +15,7 @@ enum Param
     // Front panel
     kGain = 0, kSustain, kEffect,
     // Plugin only (bottom strip of the editor)
-    kGtrVol, kInput, kOutput,
+    kInput, kOutput,
     kNumParams
 };
 
@@ -23,17 +23,17 @@ enum Kind { kKnob, kSwitch, kDb12, kDb24 };
 
 const char* const kParamNames[kNumParams] = {
     "Gain", "Sustain", "Effect",
-    "GtrVol", "Input", "Output"
+    "Input", "Output"
 };
 
 const int kParamKind[kNumParams] = {
     kKnob, kKnob, kSwitch,
-    kKnob, kDb12, kDb24
+    kDb12, kDb24
 };
 
 const float kDefaults[kNumParams] = {
     0.85f, 0.75f, 1.0f,
-    1.0f, 0.5f, 0.5f
+    0.5f, 0.5f
 };
 
 const double kInputRangeDb  = 12.0;

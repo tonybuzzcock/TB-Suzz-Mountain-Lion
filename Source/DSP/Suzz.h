@@ -2,7 +2,7 @@
 // Carlsbro Suzz fuzz pedal (drawing by Gottfried Divos, version 1.0,
 // 13.12.2006), modelled from the schematic:
 //
-//   guitar (pickup + 250K volume pot + cable) -> S1a -> C1 10n
+//   guitar (pickup, 250K volume pot on full, cable) -> S1a -> C1 10n
 //   -> IC1 pin 3 (CA741CE), biased at half the 9 V battery by R1 / R2 120K
 //   IC1 non-inverting: R3 470K || C3 47p from pin 6 to pin 2,
 //      pin 2 -> R4 470R -> C2 1u -> P1 SUSTAIN (22K reverse log, rheostat)
@@ -18,7 +18,7 @@
 // While the 741 is clipping, the rest of the circuit (C2, C3, the output
 // filter) sees the clipped output, as in the pedal.
 // Estimates (not fixed by the drawing): the 741's swing on 9 V, the pickup,
-// cable and guitar volume pot, and P2's taper. All are named constants in
+// cable and guitar volume pot (on full), and P2's taper. All are named constants in
 // Suzz.cpp.
 //
 // Volts in, volts out (1.0 = 1 V). Runs at 4x with Oversampler4x.
@@ -46,7 +46,6 @@ public:
     void setSustain (double v);         // P1 22K rev log: IC1's gain
     void setEffectOn (bool on);         // S1 footswitch
     // Plugin only
-    void setGuitarVolume (double v);    // 250K audio pot on the guitar
     void setInputGainDb (double dB);
     void setOutputGainDb (double dB);
 
@@ -76,12 +75,12 @@ private:
     Oversampler4x up, down;
     Netlist net;
     int nOut, nIc1;
-    int eP1, eVolTop, eVolBot;
+    int eP1;
 
     // Targets and smoothed values
-    double gainT, sustT, effectT, volT, inT, outT;
-    double gain, sust, effect, vol, inG, outG;
-    double sustApplied, volApplied;
+    double gainT, sustT, effectT, inT, outT;
+    double gain, sust, effect, inG, outG;
+    double sustApplied;
     double smKnob, smSwitch;
     int potCountdown;
     double ic1Out;

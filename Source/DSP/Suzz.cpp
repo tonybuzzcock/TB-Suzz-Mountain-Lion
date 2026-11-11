@@ -33,7 +33,7 @@ namespace
     const double kSwingUp   = 3.0;     // V
     const double kSwingDown = 2.6;     // V
     const double kKnee741   = 0.4;     // V
-    // The guitar: pickup resistance, its 250K audio volume pot and the cable
+    // The guitar: pickup resistance, its 250K volume pot (on full) and the cable
     const double kPickupR = 6000.0;
     const double kVolPot  = 250.0e3;
     const double kCable   = 470.0e-12;
@@ -65,9 +65,9 @@ double Suzz::swingDown()              { return kSwingDown; }
 //==============================================================================
 Suzz::Suzz()
     : fsBase (44100.0), fsOs (176400.0),
-      nOut (0), nIc1 (0), eP1 (-1), eVolTop (-1), eVolBot (-1),
-      gainT (0.85), sustT (0.75), effectT (1.0), volT (1.0), inT (1.0), outT (1.0),
-      sustApplied (-1.0), volApplied (-1.0), potCountdown (0), ic1Out (0.0)
+      nOut (0), nIc1 (0), eP1 (-1),
+      gainT (0.85), sustT (0.75), effectT (1.0), inT (1.0), outT (1.0),
+      sustApplied (-1.0), potCountdown (0), ic1Out (0.0)
 {
     buildCircuit();
     prepare (44100.0);
@@ -79,8 +79,7 @@ void Suzz::buildCircuit()
     // pin 3's bias are AC ground), so zero state is the DC solution.
     Netlist& n = net;
     n.clear();
-    const int g  = n.addNode();     // guitar: pickup output / top of the volume pot
-    const int w  = n.addNode();     // volume pot wiper, cable, jack
+    const int w  = n.addNode();     // guitar: pickup, volume pot (full), cable, jack
     const int p3 = n.addNode();     // IC1 pin 3
     const int p2 = n.addNode();     // IC1 pin 2
     const int a  = n.addNode();     // R4 / C2
@@ -89,9 +88,8 @@ void Suzz::buildCircuit()
     const int c  = n.addNode();     // C4 / R5 / R6
     const int d  = n.addNode();     // R6 / C5 / P2 (top of GAIN)
 
-    n.addInput (g, kPickupR);
-    eVolTop = n.addR (g, w, 1.0);
-    eVolBot = n.addR (w, 0, kVolPot);
+    n.addInput (w, kPickupR);
+    n.addR (w, 0, kVolPot);
     n.addC (w, 0, kCable);
     n.addC (w, p3, kC1);
     n.addR (p3, 0, kR1);            // R1 to +9 V (AC ground)
@@ -120,8 +118,8 @@ void Suzz::prepare (double sampleRate)
     smKnob   = std::exp (-1.0 / (0.020 * fsBase));
     smSwitch = std::exp (-1.0 / (0.006 * fsBase));
 
-    gain = gainT; sust = sustT; effect = effectT; vol = volT; inG = inT; outG = outT;
-    sustApplied = volApplied = -1.0;
+    gain = gainT; sust = sustT; effect = effectT; inG = inT; outG = outT;
+    sustApplied = -1.0;
     applyPots();
     net.prepare (fsOs);
     reset();
@@ -129,7 +127,7 @@ void Suzz::prepare (double sampleRate)
 
 void Suzz::reset()
 {
-    gain = gainT; sust = sustT; effect = effectT; vol = volT; inG = inT; outG = outT;
+    gain = gainT; sust = sustT; effect = effectT; inG = inT; outG = outT;
     applyPots();
     net.rebuild();
     net.reset();
@@ -141,17 +139,12 @@ void Suzz::reset()
 void Suzz::applyPots()
 {
     net.setR (eP1, potR (sustainOhms (sust)));
-    const double t = audioTaper (vol);
-    net.setR (eVolTop, potR (kVolPot * (1.0 - t)));
-    net.setR (eVolBot, potR (kVolPot * t));
     sustApplied = sust;
-    volApplied = vol;
 }
 
 void Suzz::setGain (double v)           { gainT = clamp01 (v); }
 void Suzz::setSustain (double v)        { sustT = clamp01 (v); }
 void Suzz::setEffectOn (bool on)        { effectT = on ? 1.0 : 0.0; }
-void Suzz::setGuitarVolume (double v)   { volT = clamp01 (v); }
 void Suzz::setInputGainDb (double dB)   { inT = std::pow (10.0, dB / 20.0); }
 void Suzz::setOutputGainDb (double dB)  { outT = std::pow (10.0, dB / 20.0); }
 
@@ -172,17 +165,16 @@ void Suzz::process (const float* in, float* out, int numSamples)
     {
         gain += (gainT - gain) * aK;
         sust += (sustT - sust) * aK;
-        vol += (volT - vol) * aK;
         effect += (effectT - effect) * aW;
         inG += (inT - inG) * aK;
         outG += (outT - outG) * aK;
 
-        // Pots that change the circuit: re-solve every 16 samples while moving,
+        // SUSTAIN changes the circuit: re-solve every 16 samples while it moves,
         // keeping the capacitor charges (no clicks)
         if (--potCountdown <= 0)
         {
             potCountdown = 16;
-            if (std::fabs (sust - sustApplied) > 1.0e-5 || std::fabs (vol - volApplied) > 1.0e-5)
+            if (std::fabs (sust - sustApplied) > 1.0e-5)
             {
                 applyPots();
                 net.rebuild();

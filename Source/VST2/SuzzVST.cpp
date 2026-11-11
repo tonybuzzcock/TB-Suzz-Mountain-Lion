@@ -2,7 +2,7 @@
 // VST 2.4 wrapper for TB Suzz.
 //
 // - Parameters follow the pedal's front panel (Gain, Sustain, the Effect
-//   footswitch), then the plugin-only guitar volume, Input and Output trims.
+//   footswitch), then the plugin-only Input and Output trims.
 // - Stereo in, stereo out: each side runs through its own copy of the
 //   circuit with the same settings. A mono source (both inputs identical) is
 //   processed once and the second copy kept in sync.
@@ -316,7 +316,6 @@ private:
                 case kGain:      u.setGain (v); break;
                 case kSustain:   u.setSustain (v); break;
                 case kEffect:    u.setEffectOn (on); break;
-                case kGtrVol:    u.setGuitarVolume (v); break;
                 case kInput:     u.setInputGainDb ((v * 2.0 - 1.0) * kInputRangeDb); break;
                 case kOutput:    u.setOutputGainDb ((v * 2.0 - 1.0) * kOutputRangeDb); break;
                 default: break;

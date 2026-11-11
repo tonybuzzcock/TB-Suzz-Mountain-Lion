@@ -137,11 +137,11 @@ int main (int argc, char** argv)
 
     // Each knob answers where it is drawn
     {
-        const int knobs[5] = { kGain, kSustain, kGtrVol, kInput, kOutput };
-        const CGFloat kx[5] = { 144, 336, 215, 315, 410 };
-        const CGFloat ky[5] = { 178, 178, 708, 708, 708 };
+        const int knobs[4] = { kGain, kSustain, kInput, kOutput };
+        const CGFloat kx[4] = { 144, 336, 262, 392 };
+        const CGFloat ky[4] = { 178, 178, 712, 712 };
         bool all = true;
-        for (int k = 0; k < 5; ++k)
+        for (int k = 0; k < 4; ++k)
         {
             const float v0 = e->getParameter (e, knobs[k]);
             mouse (win, panel, NSLeftMouseDown,    NSMakePoint (kx[k], ky[k]));
@@ -150,7 +150,7 @@ int main (int argc, char** argv)
             if (! (e->getParameter (e, knobs[k]) < v0 - 0.05f || v0 < 0.05f)) all = false;
             e->setParameter (e, knobs[k], kDefaults[knobs[k]]);
         }
-        check (all, "all five knobs turn");
+        check (all, "all four knobs turn");
     }
 
     // Stomp switch: each press toggles
@@ -165,9 +165,9 @@ int main (int argc, char** argv)
 
     // Strip knob turned up shows in the readout
     const float a0 = e->getParameter (e, kOutput);
-    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (410, 708));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (410, 688));
-    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (410, 688));
+    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (392, 712));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (392, 692));
+    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (392, 692));
     check (e->getParameter (e, kOutput) > a0 + 0.05f, "strip knobs turn");
     renderPNG (panel, dir + "/panel_readout.png");
     e->setParameter (e, kOutput, 0.5f);

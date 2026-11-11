@@ -33,7 +33,7 @@ Named constants in `Source/DSP/Suzz.cpp`:
 |---|---|
 | 741 output swing on 9 V, from the 4.5 V bias | +3.0 V / -2.6 V, rounding off over the last 0.4 V |
 | GAIN (P2) taper | audio (log) |
-| Guitar | 6K pickup, 250K audio volume pot, 470 pF cable |
+| Guitar | 6K pickup, 250K volume pot on full, 470 pF cable |
 
 ## Controls
 
@@ -42,7 +42,6 @@ Named constants in `Source/DSP/Suzz.cpp`:
 | GAIN | `Gain` | P2, the output level (0-10, marked min/max as on the pedal) |
 | SUSTAIN | `Sustain` | P1, IC1's gain (0-10, marked min/max) |
 | Stomp switch | `Effect` | S1: In / Out (true bypass). Glows red when the effect is in |
-| GUITAR VOL (strip) | `GtrVol` | The guitar's volume knob, which the input interacts with |
 | INPUT (strip) | `Input` | -12..+12 dB into the pedal (1.0 in the DAW = 1 V) |
 | OUTPUT (strip) | `Output` | -24..+24 dB after it |
 
@@ -59,8 +58,7 @@ Eight preset slots (SAVE, then a slot) live in
 
 ## Building and testing
 
-- `make -C Tests run vst-run` - DSP tests (bias, response, clipping, sustain, guitar
-  volume, bypass, stability, automation, CPU, demo WAVs in `Tests/renders`), presets, and
+- `make -C Tests run vst-run` - DSP tests (bias, response, clipping, sustain, bypass, stability, automation, CPU, demo WAVs in `Tests/renders`), presets, and
   the plugin in a mini VST host. `make -C Tests asan` runs them under the sanitizers.
 - `scripts/build_vst_mac.sh` (on a Mac) builds the bundle for 10.8 and fails unless the
   binary declares 10.8 as its minimum and links only libraries that exist on 10.8.

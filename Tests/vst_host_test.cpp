@@ -86,7 +86,7 @@ int main (int argc, char** argv)
     std::printf ("\nIdentity\n");
     check (e->magic == kEffectMagic, "magic is 'VstP'");
     check (e->numInputs == 2 && e->numOutputs == 2, "stereo in/out");
-    check (e->numParams == tbsz::kNumParams && tbsz::kNumParams == 6, "6 parameters (3 panel + 3 plugin)");
+    check (e->numParams == tbsz::kNumParams && tbsz::kNumParams == 5, "5 parameters (3 panel + 2 plugin)");
     check ((e->flags & effFlagsCanReplacing) != 0, "processReplacing supported");
     check ((e->flags & effFlagsIsSynth) == 0, "not flagged as an instrument");
     check (e->initialDelay == tbsz::Suzz::latencySamples(), "reports oversampler latency");
@@ -105,7 +105,7 @@ int main (int argc, char** argv)
     call (e, effSetBlockSize, 0, 512);
 
     std::printf ("\nParameters\n");
-    const char* expectDisp[6] = { "8.5", "7.5", "In", "10.0", "+0.0", "+0.0" };
+    const char* expectDisp[5] = { "8.5", "7.5", "In", "+0.0", "+0.0" };
     for (int i = 0; i < tbsz::kNumParams; ++i)
     {
         char name[64] = { 0 }, disp[64] = { 0 }, label[64] = { 0 };
@@ -148,7 +148,7 @@ int main (int argc, char** argv)
     // Reference: the DSP core directly, same settings as the plugin defaults
     tbsz::Suzz* refp = new tbsz::Suzz();
     tbsz::Suzz& ref = *refp;
-    ref.setGain (0.85); ref.setSustain (0.75); ref.setEffectOn (true); ref.setGuitarVolume (1.0);
+    ref.setGain (0.85); ref.setSustain (0.75); ref.setEffectOn (true);
     ref.setInputGainDb (0.0); ref.setOutputGainDb (0.0);
     ref.prepare (sr);
     std::vector<float> refOut (sr);

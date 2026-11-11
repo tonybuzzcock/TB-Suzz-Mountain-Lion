@@ -7,10 +7,9 @@
 //    the 741's bandwidth narrows as SUSTAIN raises its gain
 // 3. Clipping: the 741 hits its swing, a little lopsided on one battery
 // 4. Sustain: a decaying note is held longer with SUSTAIN up
-// 5. Guitar volume: cleans up and quietens; 0 is silent
-// 6. Footswitch: Effect Out is a straight-through bypass
-// 7. Stability sweep: knob extremes x 10 mV-4 V x 41 Hz-15 kHz, plus noise
-// 8. Automation of every control while playing, click-free pots, CPU, renders
+// 5. Footswitch: Effect Out is a straight-through bypass
+// 6. Stability sweep: knob extremes x 10 mV-4 V x 41 Hz-15 kHz, plus noise
+// 7. Automation of every control while playing, click-free pots, CPU, renders
 
 #include "../Source/DSP/Suzz.h"
 
@@ -79,7 +78,7 @@ static std::vector<float> run (Suzz& a, const std::vector<float>& in)
 static void defaults (Suzz& a)
 {
     a.setGain (0.85); a.setSustain (0.75); a.setEffectOn (true);
-    a.setGuitarVolume (1.0); a.setInputGainDb (0.0); a.setOutputGainDb (0.0);
+    a.setInputGainDb (0.0); a.setOutputGainDb (0.0);
 }
 
 // Small-signal gain (dB) from the input jack to the output jack
@@ -332,30 +331,7 @@ int main (int argc, char** argv)
         check (hold[1] > 2.0 * hold[0], "SUSTAIN holds a decaying note much longer");
     }
 
-    std::printf ("\n5. Guitar volume\n");
-    {
-        defaults (a);
-        a.setGain (1.0); a.setSustain (1.0);
-        double prev = 1e9;
-        bool down = true;
-        for (int k = 10; k >= 2; k -= 2)
-        {
-            a.setGuitarVolume (k / 10.0);
-            a.reset();
-            std::vector<float> y = run (a, sine (196.0, 0.01, 0.5));
-            const double r = rmsRange (y, kSr / 4, kSr / 2);
-            std::printf ("  guitar volume %d: output %.4f V rms\n", k, r);
-            if (r >= prev) down = false;
-            prev = r;
-        }
-        check (down, "turning the guitar down lowers the drive");
-        a.setGuitarVolume (0.0);
-        a.reset();
-        std::vector<float> y = run (a, sine (196.0, 0.3, 0.5));
-        check (peakRange (y, kSr / 4, kSr / 2) < 1e-3, "guitar volume 0 is (nearly) silent");
-    }
-
-    std::printf ("\n6. Footswitch\n");
+    std::printf ("\n5. Footswitch\n");
     {
         defaults (a);
         a.setEffectOn (false);
@@ -377,17 +353,17 @@ int main (int argc, char** argv)
         check (d < 0.01, "Effect Out passes the input straight through");
     }
 
-    std::printf ("\n7. Stability sweep\n");
+    std::printf ("\n6. Stability sweep\n");
     {
         const double amps[4] = { 0.01, 0.1, 1.0, 4.0 };
         const double freqs[5] = { 41.0, 110.0, 440.0, 2000.0, 15000.0 };
-        const double corners[4][3] = { { 0, 0, 0.05 }, { 1, 1, 1 }, { 0, 1, 1 }, { 1, 0, 0.5 } };
+        const double corners[4][2] = { { 0, 0 }, { 1, 1 }, { 0, 1 }, { 1, 0 } };
         int runs = 0; bool ok = true;
         for (int c = 0; c < 4; ++c)
             for (int ai = 0; ai < 4; ++ai)
                 for (int fi = 0; fi < 5; ++fi)
                 {
-                    a.setGain (corners[c][0]); a.setSustain (corners[c][1]); a.setGuitarVolume (corners[c][2]);
+                    a.setGain (corners[c][0]); a.setSustain (corners[c][1]);
                     a.setEffectOn (true);
                     a.reset();
                     std::vector<float> y = run (a, sine (freqs[fi], amps[ai], 0.4));
@@ -399,8 +375,7 @@ int main (int argc, char** argv)
         {
             seed = seed * 1664525u + 1013904223u; const double f1 = (seed >> 8) / 16777216.0;
             seed = seed * 1664525u + 1013904223u; const double f2 = (seed >> 8) / 16777216.0;
-            seed = seed * 1664525u + 1013904223u; const double f3 = (seed >> 8) / 16777216.0;
-            a.setGain (f1); a.setSustain (f2); a.setGuitarVolume (f3);
+            a.setGain (f1); a.setSustain (f2);
             a.reset();
             std::vector<float> y = run (a, noise (2.0, 0.4, seed));
             if (! allFinite (y, 10.0)) ok = false;
@@ -410,7 +385,7 @@ int main (int argc, char** argv)
         check (ok, "no NaNs or runaways anywhere");
     }
 
-    std::printf ("\n8. Automation, click-free pots, CPU, renders\n");
+    std::printf ("\n7. Automation, click-free pots, CPU, renders\n");
     {
         defaults (a);
         a.reset();
@@ -420,7 +395,6 @@ int main (int argc, char** argv)
             const double t = (double) pos / x.size();
             a.setGain (0.5 + 0.5 * std::sin (2 * kPiT * 3 * t));
             a.setSustain (0.5 + 0.5 * std::sin (2 * kPiT * 5 * t));
-            a.setGuitarVolume (0.5 + 0.5 * std::sin (2 * kPiT * 7 * t));
             a.setEffectOn (std::sin (2 * kPiT * 4 * t) > 0.0);
             a.setInputGainDb (12.0 * std::sin (2 * kPiT * 2 * t));
             a.setOutputGainDb (12.0 * std::sin (2 * kPiT * 9 * t));
@@ -429,7 +403,7 @@ int main (int argc, char** argv)
         }
         check (allFinite (y, 10.0), "every control automated while playing");
 
-        // Turning SUSTAIN and the guitar volume with no signal makes no clicks
+        // Turning SUSTAIN with no signal makes no clicks
         defaults (a);
         a.setGain (1.0);
         a.reset();
@@ -438,7 +412,6 @@ int main (int argc, char** argv)
         {
             const double t = (double) pos / z.size();
             a.setSustain (0.5 + 0.5 * std::sin (2 * kPiT * 3 * t));
-            a.setGuitarVolume (0.5 + 0.5 * std::sin (2 * kPiT * 5 * t));
             a.process (&z[pos], &oz[pos], (int) std::min ((size_t) 64, z.size() - pos));
         }
         std::printf ("  pots turned in silence: output peak %.2g\n", peakRange (oz, 0, oz.size()));

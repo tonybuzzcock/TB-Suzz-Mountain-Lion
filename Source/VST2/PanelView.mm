@@ -4,8 +4,8 @@
 // grey knurled knobs with a red position line for GAIN and SUSTAIN (scales
 // marked min and max as on the pedal), the treadle with the stomp switch
 // (glows red when the effect is in), the bar and the name plate. A strip of
-// plugin controls runs along the bottom (TB electronic logo, guitar volume,
-// Input, Output, presets and the readout).
+// plugin controls runs along the bottom (TB electronic logo, Input, Output,
+// presets and the readout).
 //
 // Cocoa, manual retain/release, and only APIs that exist in Mac OS X 10.8.
 // Everything is drawn in code; no image files.
@@ -54,9 +54,8 @@ const Ctl kCtls[] = {
     { kSustain,   kCtlKnob,      336, 178, 30, "SUSTAIN",    0, 0 },
     { kEffect,    kCtlFootswitch,240, 386, 24, "EFFECT",     0, 0 },
     // Plugin strip
-    { kGtrVol,    kCtlSmallKnob, 215, 708, 15, "GUITAR VOL", "0",   "10" },
-    { kInput,     kCtlSmallKnob, 315, 708, 15, "INPUT",      "-12", "+12" },
-    { kOutput,    kCtlSmallKnob, 410, 708, 15, "OUTPUT",     "-24", "+24" },
+    { kInput,     kCtlSmallKnob, 262, 712, 21, "INPUT",      "-12", "+12" },
+    { kOutput,    kCtlSmallKnob, 392, 712, 21, "OUTPUT",     "-24", "+24" },
 };
 
 // Preset section in the strip: a SAVE button and slots 1..8, then the readout
@@ -113,6 +112,64 @@ void drawTextLeft (const char* s, NSFont* font, NSColor* color, CGFloat x, CGFlo
                              font, NSFontAttributeName, color, NSForegroundColorAttributeName, nil];
     const NSSize sz = [str sizeWithAttributes: attrs];
     [str drawAtPoint: NSMakePoint (x, cy - sz.height * 0.5) withAttributes: attrs];
+}
+
+// Lettering in the spirit of the Shatter display face: heavy slanted capitals
+// sliced by slightly tilted fractures into strips, each strip knocked sideways.
+// Built from Helvetica Bold glyph outlines, so no font file is needed.
+void drawShatteredText (const char* s, CGFloat size, CGFloat cx, CGFloat cy)
+{
+    NSFont* f = boldFont (size);
+    NSBezierPath* glyphs = [NSBezierPath bezierPath];
+    NSPoint pen = NSMakePoint (0.0, 0.0);
+    for (const char* c = s; *c; ++c)
+    {
+        char name[2] = { *c, 0 };
+        const NSGlyph g = [f glyphWithName: [NSString stringWithUTF8String: name]];
+        [glyphs moveToPoint: pen];
+        [glyphs appendBezierPathWithGlyph: g inFont: f];
+        pen.x += [f advancementForGlyph: g].width + size * 0.04;
+    }
+
+    // Glyphs come y-up: flip into the panel's coordinates, slant, centre
+    NSAffineTransform* t = [NSAffineTransform transform];
+    NSAffineTransformStruct m = { 1.0, 0.0, 0.22, -1.0, 0.0, 0.0 };    // x' = x + 0.22 y: tops lean forward
+    [t setTransformStruct: m];
+    [glyphs transformUsingAffineTransform: t];
+    const NSRect b = [glyphs bounds];
+    NSAffineTransform* mv = [NSAffineTransform transform];
+    [mv translateXBy: cx - NSMidX (b) yBy: cy - NSMidY (b)];
+    [glyphs transformUsingAffineTransform: mv];
+    const NSRect r = [glyphs bounds];
+
+    // Fracture lines (fraction of the height at the centre, and their tilt), and
+    // how far each strip between them is knocked sideways
+    const int kStrips = 5;
+    const CGFloat cutAt[kStrips + 1]  = { -0.2, 0.21, 0.40, 0.61, 0.79, 1.2 };
+    const CGFloat cutTilt[kStrips + 1] = { 0.0, 0.05, -0.04, 0.06, -0.05, 0.0 };
+    const CGFloat shift[kStrips] = { -4.0, 3.0, -2.5, 4.5, -3.0 };
+    const CGFloat gap = 1.2;
+    const CGFloat x0 = NSMinX (r) - 30.0, x1 = NSMaxX (r) + 30.0, mid = NSMidX (r);
+
+    [[NSColor blackColor] set];
+    for (int k = 0; k < kStrips; ++k)
+    {
+        const CGFloat yt = NSMinY (r) + cutAt[k] * r.size.height + gap;
+        const CGFloat yb = NSMinY (r) + cutAt[k + 1] * r.size.height - gap;
+        NSBezierPath* band = [NSBezierPath bezierPath];
+        [band moveToPoint: NSMakePoint (x0, yt + cutTilt[k] * (x0 - mid))];
+        [band lineToPoint: NSMakePoint (x1, yt + cutTilt[k] * (x1 - mid))];
+        [band lineToPoint: NSMakePoint (x1, yb + cutTilt[k + 1] * (x1 - mid))];
+        [band lineToPoint: NSMakePoint (x0, yb + cutTilt[k + 1] * (x0 - mid))];
+        [band closePath];
+
+        [NSGraphicsContext saveGraphicsState];
+        [band addClip];
+        NSAffineTransform* sh = [NSAffineTransform transform];
+        [sh translateXBy: shift[k] yBy: 0.0];
+        [[sh transformBezierPath: glyphs] fill];
+        [NSGraphicsContext restoreGraphicsState];
+    }
 }
 
 } // namespace
@@ -267,7 +324,7 @@ void drawTextLeft (const char* s, NSFont* font, NSColor* color, CGFloat x, CGFlo
     [rgb (80, 82, 85) set];
     [plate setLineWidth: 1.0];
     [plate stroke];
-    drawText ("SUZZ", boldFont (46.0), ink, NSMidX (kPlate), NSMidY (kPlate));
+    drawShatteredText ("SUZZ", 56.0, NSMidX (kPlate), NSMidY (kPlate) + 1.0);
 
     // The TB electronic logo in the strip's corner, straight on the silver
     tblogo::drawTBLogo (NSMakeRect (16.0, 670.0, 130.0, 72.0));
@@ -506,9 +563,9 @@ void drawTextLeft (const char* s, NSFont* font, NSColor* color, CGFloat x, CGFlo
             case kCtlSmallKnob:
             {
                 [self drawKnobAt: NSMakePoint (c.cx, c.cy) radius: c.r value: shown[c.param]];
-                drawText (c.label, boldFont (10.0), ink, c.cx, c.cy - c.r - 14.0);
-                drawText (c.posA, plainFont (8.5), ink, c.cx - c.r - 16.0, c.cy + c.r - 2.0);
-                drawText (c.posB, plainFont (8.5), ink, c.cx + c.r + 16.0, c.cy + c.r - 2.0);
+                drawText (c.label, boldFont (11.0), ink, c.cx, c.cy - c.r - 13.0);
+                drawText (c.posA, plainFont (9.5), ink, c.cx - c.r - 17.0, c.cy + c.r - 3.0);
+                drawText (c.posB, plainFont (9.5), ink, c.cx + c.r + 17.0, c.cy + c.r - 3.0);
                 break;
             }
             default: break;
