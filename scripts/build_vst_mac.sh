@@ -4,7 +4,7 @@
 # libraries that exist on 10.8. Run on macOS (GitHub's Intel runner or any Mac
 # with Xcode command line tools):
 #
-#   scripts/build_vst_mac.sh   -> "build/TB Suzz.vst", build/TB-Suzz-mac-vst.zip
+#   scripts/build_vst_mac.sh   -> "build/TB Suzz.vst", build/TB-Suzz-mountain-lion-vst.zip
 
 set -euo pipefail
 
@@ -12,7 +12,7 @@ cd "$(dirname "$0")/.."
 OUT=build
 NAME="TB Suzz"
 EXE=TBSuzz
-ZIP=TB-Suzz-mac-vst.zip
+ZIP=TB-Suzz-mountain-lion-vst.zip
 BUNDLE="$OUT/$NAME.vst"
 MIN_OS=10.8
 

@@ -51,7 +51,7 @@ Eight preset slots (SAVE, then a slot) live in
 
 ## Install
 
-1. GitHub -> **Actions** -> the latest green run -> **Artifacts** -> `TB-Suzz-mac-vst`.
+1. GitHub -> **Actions** -> the latest green run -> **Artifacts** -> `TB-Suzz-mountain-lion-vst`.
 2. Unzip it (twice: GitHub zips the zip) to get `TB Suzz.vst`.
 3. Copy `TB Suzz.vst` to `/Library/Audio/Plug-Ins/VST/`.
 4. Rescan in Blue Cat PatchWork and load **TB Suzz**.
